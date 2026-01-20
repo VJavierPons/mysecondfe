@@ -25,6 +25,7 @@
               }
             ],
             "styles": [
+              "src/material-theme.scss",
               "src/styles.css"
             ]
           },
@@ -59,7 +60,8 @@
               "buildTarget": "mysecondfe:build:production"
             },
             "development": {
-              "buildTarget": "mysecondfe:build:development"
+              "buildTarget": "mysecondfe:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

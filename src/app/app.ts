@@ -8,5 +8,8 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.css'
 })
 export class App {
+  constructor() {
+    console.log('App initialized');
+  }
   protected readonly title = signal('mysecondfe');
 }
