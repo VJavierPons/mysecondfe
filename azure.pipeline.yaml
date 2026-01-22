@@ -1,33 +1,22 @@
 
 trigger:
-- main   # o 'master' si es tu rama principal
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# 1) Node
 - task: NodeTool@0
   inputs:
-    versionSpec: '20.x'   # o 18.x si tu proyecto lo requiere
+    versionSpec: '20.x'
   displayName: 'Install Node.js'
 
-# 2) Instalar dependencias (sin cache)
 - bash: |
     npm ci
     npm -v
     node -v
   displayName: 'Install dependencies'
 
-# 3) Build Angular
 - bash: |
     npm run build -- --configuration production
   displayName: 'Build Angular'
-
-# 4) (Opcional) Publicar artefacto
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     PathtoPublish: 'dist'
-#     ArtifactName: 'dist'
-#     publishLocation: 'Container'
-#   displayName: 'Publish dist artifact'
