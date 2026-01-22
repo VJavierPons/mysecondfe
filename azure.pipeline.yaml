@@ -1,0 +1,32 @@
+
+trigger:
+- main   # cambia a 'main'. Si tu rama es 'master', deja 'master'.
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'   # O '18.x' si tu proyecto lo requiere
+  displayName: 'Install Node.js'
+
+# Cache de npm para acelerar
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    restoreKeys: |
+      npm | "$(Agent.OS)"
+    path: '$(Pipeline.Workspace)/.npm'
+  displayName: 'Cache npm'
+  
+# Instalar dependencias de forma reproducible
+- script: |
+    npm ci
+  displayName: 'Install dependencies'
+
+
+# Build (reemplaza --prod por --configuration production)
+- script: |
+    npm run build -- --configuration production
+  displayName: "Build Angular"
