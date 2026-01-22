@@ -1,12 +1,9 @@
 
 trigger:
-- main   # cambia a 'master' si tu rama principal es master
+- main   # o 'master' si es tu rama principal
 
 pool:
   vmImage: 'ubuntu-latest'
-
-variables:
-  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm
 
 steps:
 # 1) Node
@@ -15,30 +12,19 @@ steps:
     versionSpec: '20.x'   # o 18.x si tu proyecto lo requiere
   displayName: 'Install Node.js'
 
-# 2) Crear carpeta de cache (evita el error del post-job)
-- script: mkdir -p $(NPM_CACHE_FOLDER)
-  displayName: 'Ensure npm cache folder exists'
-
-# 3) Cache npm
-- task: Cache@2
-  inputs:
-    key: 'npm | "$(Agent.OS)" | package-lock.json'
-    restoreKeys: |
-      npm | "$(Agent.OS)"
-    path: $(NPM_CACHE_FOLDER)
-  displayName: 'Cache npm'
-
-# 4) Instalar deps usando el cache
-- script: |
-    npm ci --cache $(NPM_CACHE_FOLDER)
+# 2) Instalar dependencias (sin cache)
+- bash: |
+    npm ci
+    npm -v
+    node -v
   displayName: 'Install dependencies'
 
-# 5) Build Angular (usa tu configuración)
-- script: |
+# 3) Build Angular
+- bash: |
     npm run build -- --configuration production
   displayName: 'Build Angular'
 
-# (Opcional) Publicar artefacto dist para releases
+# 4) (Opcional) Publicar artefacto
 # - task: PublishBuildArtifacts@1
 #   inputs:
 #     PathtoPublish: 'dist'
