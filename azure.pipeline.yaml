@@ -1,32 +1,47 @@
 
 trigger:
-- main   # cambia a 'main'. Si tu rama es 'master', deja 'master'.
+- main   # cambia a 'master' si tu rama principal es master
 
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  NPM_CACHE_FOLDER: $(Pipeline.Workspace)/.npm
+
 steps:
+# 1) Node
 - task: NodeTool@0
   inputs:
-    versionSpec: '20.x'   # O '18.x' si tu proyecto lo requiere
+    versionSpec: '20.x'   # o 18.x si tu proyecto lo requiere
   displayName: 'Install Node.js'
 
-# Cache de npm para acelerar
+# 2) Crear carpeta de cache (evita el error del post-job)
+- script: mkdir -p $(NPM_CACHE_FOLDER)
+  displayName: 'Ensure npm cache folder exists'
+
+# 3) Cache npm
 - task: Cache@2
   inputs:
     key: 'npm | "$(Agent.OS)" | package-lock.json'
     restoreKeys: |
       npm | "$(Agent.OS)"
-    path: '$(Pipeline.Workspace)/.npm'
+    path: $(NPM_CACHE_FOLDER)
   displayName: 'Cache npm'
-  
-# Instalar dependencias de forma reproducible
+
+# 4) Instalar deps usando el cache
 - script: |
-    npm ci
+    npm ci --cache $(NPM_CACHE_FOLDER)
   displayName: 'Install dependencies'
 
-
-# Build (reemplaza --prod por --configuration production)
+# 5) Build Angular (usa tu configuración)
 - script: |
     npm run build -- --configuration production
-  displayName: "Build Angular"
+  displayName: 'Build Angular'
+
+# (Opcional) Publicar artefacto dist para releases
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: 'dist'
+#     ArtifactName: 'dist'
+#     publishLocation: 'Container'
+#   displayName: 'Publish dist artifact'
