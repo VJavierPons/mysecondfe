@@ -95,3 +95,4 @@ export class TemperatureEntryComponent implements OnInit, AfterViewInit {
     });
   }
 }
+console.log('TemperatureEntryComponent loaded');
