@@ -1,28 +1,45 @@
 
 trigger:
-- master
+- master  # deja 'master' si es tu rama principal; si usas 'main', cámbialo
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+# 1) Node 20.x (coincide con lo que pediste)
 - task: NodeTool@0
   inputs:
     versionSpec: '20.x'
-  displayName: 'Install Node.js'
+  displayName: 'Install Node.js 20.x'
 
+# 2) Instalar deps + diagnóstico rápido
 - bash: |
     npm ci
-    npm -v
-    node -v
+    echo "npm version:" && npm -v
+    echo "node version:" && node -v
+    # Usar npx para asegurar que usamos el CLI local del proyecto
     npx ng version
+    echo "node_modules/.bin (primeros 20):"
     ls -la node_modules/.bin | head -n 20
   displayName: 'Install dependencies + quick debug'
 
+# 3) Tests con cobertura, sin watch, en headless
+#    Si tu karma ya usa ChromeHeadless por defecto, puedes quitar --browsers.
+#    Si falla Chrome, cambia a FirefoxHeadless y añade karma-firefox-launcher como devDep.
 - bash: |
-    npm run test -- --watch=false --coverage
-  displayName: 'Run Tests'
+    npx ng test --watch=false --code-coverage --browsers=ChromeHeadless
+  displayName: 'Run Tests (Angular - headless)'
 
+# (Opcional pero recomendado) Publicar cobertura en Azure DevOps
+- task: PublishCodeCoverageResults@2
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/**/cobertura-coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/coverage'
+    failIfCoverageEmpty: true
+  displayName: 'Publish coverage'
+
+# 4) Build producción con npx (evita PATH global)
 - bash: |
-    npm run build -- --configuration production
-  displayName: 'Build Angular'
+    npx ng build --configuration production
+  displayName: 'Build Angular (production)'
