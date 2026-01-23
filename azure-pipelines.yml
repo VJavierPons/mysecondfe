@@ -15,12 +15,14 @@ steps:
     npm ci
     npm -v
     node -v
-  displayName: 'Install dependencies'
+    npx ng version
+    ls -la node_modules/.bin | head -n 20
+  displayName: 'Install dependencies + quick debug'
 
 - bash: |
-    npx ng test --run --coverage
+    npm run test -- --watch=false --coverage
   displayName: 'Run Tests'
 
 - bash: |
-    npx ng build --configuration production
+    npm run build -- --configuration production
   displayName: 'Build Angular'
