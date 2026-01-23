@@ -1,0 +1,25 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+- bash: |
+    npm ci
+    npm -v
+    node -v
+  displayName: 'Install dependencies'
+
+- bash: |
+    npm run test -- --run --coverage
+  displayName: 'Run Tests'
+
+- bash: |
+    npm run build -- --configuration production
+  displayName: 'Build Angular'
