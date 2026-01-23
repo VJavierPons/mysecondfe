@@ -18,5 +18,9 @@ steps:
   displayName: 'Install dependencies'
 
 - bash: |
+    npm run test -- --run --coverage
+  displayName: 'Run Tests'
+
+- bash: |
     npm run build -- --configuration production
   displayName: 'Build Angular'
