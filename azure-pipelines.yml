@@ -1,22 +1,16 @@
 
 trigger:
-- master   # cambia a 'main' si tu rama principal es main
+- master   
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# ------------------------------------------------------------
-# 1) Node.js (Angular 21 funciona bien con Node 20)
-# ------------------------------------------------------------
 - task: NodeTool@0
   inputs:
     versionSpec: '20.x'
   displayName: 'Use Node.js 20.x'
 
-# ------------------------------------------------------------
-# 2) Install deps (package-lock manda)
-# ------------------------------------------------------------
 - bash: |
     npm ci
     echo "Node:" && node -v
@@ -25,20 +19,13 @@ steps:
     npm exec -- ng version
   displayName: 'Install dependencies + Angular CLI check'
 
-# ------------------------------------------------------------
-# 3) Run unit tests (Angular + Karma + Jasmine, headless)
-# ------------------------------------------------------------
 - bash: |
     npm exec -- ng test \
       --watch=false \
       --code-coverage \
       --browsers=ChromeHeadless
   displayName: 'Run Unit Tests (Angular - Chrome Headless)'
-
-# ------------------------------------------------------------
-# 4) Publish code coverage to Azure DevOps
-#    (Karma -> cobertura)
-# ------------------------------------------------------------
+  
 - task: PublishCodeCoverageResults@2
   inputs:
     codeCoverageTool: 'Cobertura'
@@ -47,10 +34,7 @@ steps:
     failIfCoverageEmpty: true
   displayName: 'Publish Coverage Report'
 
-# ------------------------------------------------------------
-# 5) Build production bundle
-# ------------------------------------------------------------
 - bash: |
     npm exec -- ng build --configuration production
   displayName: 'Build Angular (production)'
-``
+
