@@ -22,10 +22,8 @@ steps:
 - bash: |
     npm exec -- ng test \
       --watch=false \
-      --coverage \
-      --browsers=ChromeHeadless \
-      --runner=karma
-  displayName: 'Run Unit Tests (Angular - Chrome Headless)'
+      --coverage
+  displayName: 'Run Unit Tests (Angular - JSDOM)'
   
 - task: PublishCodeCoverageResults@2
   inputs:
