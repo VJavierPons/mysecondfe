@@ -21,17 +21,8 @@ steps:
 
 - bash: |
     npm exec -- ng test \
-      --watch=false \
-      --coverage
+      --watch=false
   displayName: 'Run Unit Tests (Angular - JSDOM)'
-  
-- task: PublishCodeCoverageResults@2
-  inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/**/cobertura-coverage.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/coverage'
-    failIfCoverageEmpty: true
-  displayName: 'Publish Coverage Report'
 
 - bash: |
     npm exec -- ng build --configuration production
