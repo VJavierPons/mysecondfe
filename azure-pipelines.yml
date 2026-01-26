@@ -22,7 +22,7 @@ steps:
 - bash: |
     npm exec -- ng test \
       --watch=false \
-      --code-coverage \
+      --coverage \
       --browsers=ChromeHeadless
   displayName: 'Run Unit Tests (Angular - Chrome Headless)'
   
